@@ -25,6 +25,10 @@ public class TileScroll : MonoBehaviour
             {
                 current.x += mapSize;
             }
+            else if (current.x > mapSize)
+            {
+                current.x -= mapSize;
+            }
 
             transform.localPosition = current;
         }

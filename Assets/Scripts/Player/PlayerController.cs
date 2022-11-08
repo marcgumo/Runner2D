@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     public TrailRenderer trailRenderer;
     Vector2 dashDirection = Vector2.zero;
     bool isDashing = false;
-    bool canDash = true;
+    bool canDash = false;
     float currentGravity = 0;
 
     [Header("Melee Attack Settings")]
@@ -47,15 +47,21 @@ public class PlayerController : MonoBehaviour
     public float meleeAttackRadio;
     public LayerMask enemyLayer;
     public int meleeDamage;
+    public float meleeRate = 1f;
     public GameObject meleeAttackEffect;
     public GameObject AttackEffectPrefab;
+    float currentMeleeRate;
 
-    [Header("Melee Attack Settings")]
+    [Header("Fire Attack Settings")]
     public GameObject projectile;
     public Transform firePoint;
     public float fireImpulse = 6f;
-    public float fireRate = 1f;
+    public float fireRate = 5f;
     float currentFireRate;
+
+    [Header("Power Ups Settings")]
+    public bool dashPowerUp = false;
+    public bool firePowerUp = false;
 
     [Header("Audio Settings")]
     public List<AudioClip> audioList;
@@ -91,6 +97,9 @@ public class PlayerController : MonoBehaviour
 
         initialPosition = transform.position;
 
+        currentFireRate = fireRate;
+        currentMeleeRate = meleeRate;
+
         _UIController = GameObject.FindGameObjectWithTag("UI").GetComponent<UIController>();
     }
 
@@ -109,7 +118,10 @@ public class PlayerController : MonoBehaviour
 
         Jump();
 
-        Dash();
+        if (dashPowerUp)
+        {
+            Dash();
+        }
 
         SetAnimation();
 
@@ -145,12 +157,17 @@ public class PlayerController : MonoBehaviour
                 MeleeAttackEffect(true);
             }
         }
+        
+        currentMeleeRate += Time.deltaTime;
 
-        currentFireRate += Time.deltaTime;
-
-        if (Input.GetButton("Fire1") && Input.GetButton("Fire2"))
+        if (firePowerUp)
         {
-            MeleeAttackEffect(false);
+            currentFireRate += Time.deltaTime;
+
+            if (Input.GetButton("Fire1") && Input.GetButton("Fire2"))
+            {
+                MeleeAttackEffect(false);
+            }
         }
     }
     #endregion
@@ -166,7 +183,7 @@ public class PlayerController : MonoBehaviour
 
         anim.SetBool("dash", isDashing);
 
-        if (!(Input.GetButton("Fire1") && Input.GetButton("Fire2")))
+        if (!(Input.GetButton("Fire1") && Input.GetButton("Fire2")) && (currentMeleeRate > meleeRate || currentMeleeRate <= 0.1f))
         {
             anim.SetBool("jabIzquierdo", Input.GetButtonDown("Fire1"));
             anim.SetBool("jabDerecho", Input.GetButtonDown("Fire2"));
@@ -179,21 +196,26 @@ public class PlayerController : MonoBehaviour
     {
         if (melee)
         {
-            meleeAttackEffect.SetActive(false);
-            meleeAttackEffect.SetActive(true);
-
-            source.PlayOneShot(audioList[1]);
-
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(meleeAttackPoint.position, meleeAttackRadio, enemyLayer);
-
-            foreach (Collider2D enemy in hitEnemies)
+            if (currentMeleeRate > meleeRate)
             {
-                enemy.GetComponent<HealthManager>().TakeDamage(meleeDamage, "Enemy");
+                currentMeleeRate = 0;
+
+                meleeAttackEffect.SetActive(false);
+                meleeAttackEffect.SetActive(true);
+
+                source.PlayOneShot(audioList[1]);
+
+                Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(meleeAttackPoint.position, meleeAttackRadio, enemyLayer);
+
+                foreach (Collider2D enemy in hitEnemies)
+                {
+                    enemy.GetComponent<HealthManager>().TakeDamage(meleeDamage, "Enemy");
+                }
             }
         }
         else
         {
-            if (currentFireRate > fireRate)
+            if (currentFireRate > fireRate && firePowerUp)
             {
                 currentFireRate = 0;
                 GameObject _projectile = Instantiate(projectile, firePoint.position, Quaternion.identity);
@@ -222,7 +244,7 @@ public class PlayerController : MonoBehaviour
             }
 
             currentJumpsOnAir = 0;
-            
+
             if (!canDash)
             {
                 StartCoroutine(EnableDashing());
@@ -296,7 +318,11 @@ public class PlayerController : MonoBehaviour
         Vector3 targetVelocity = new Vector2(value * movementSpeed, rb.velocity.y);
         if (OnGround(rampLayer))
         {
-            targetVelocity.y = targetVelocity.x;
+            targetVelocity.y = Mathf.Abs(targetVelocity.x);
+            if (targetVelocity.y > 0)
+            {
+                targetVelocity *= 1.5f;
+            }
             Debug.Log(targetVelocity);
         }
         rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
@@ -305,6 +331,18 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector3(0, rb.velocity.y);
         }
+    }
+    #endregion
+
+    #region Power Ups
+    public void EnableDashPowerUp()
+    {
+        dashPowerUp = true;
+    }
+
+    public void EnableFirePowerUp()
+    {
+        firePowerUp = true;
     }
     #endregion
 
@@ -340,19 +378,21 @@ public class PlayerController : MonoBehaviour
             _UIController.SetWorldFinished();
         }
 
-        switch (currentWorldType)
-        {
-            case worldType.world01:
-                worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
-                break;
-            case worldType.world02:
-                worldfinished = _UIController.GetScore() >= scoreGoal;
-                break;
-            case worldType.world03:
-                break;
-            default:
-                break;
-        }
+        worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
+
+        //switch (currentWorldType)
+        //{
+        //    case worldType.world01:
+        //        worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
+        //        break;
+        //    case worldType.world02:
+        //        worldfinished = _UIController.GetScore() >= scoreGoal;
+        //        break;
+        //    case worldType.world03:
+        //        break;
+        //    default:
+        //        break;
+        //}
     }
     #endregion
 
