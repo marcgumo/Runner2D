@@ -296,7 +296,8 @@ public class PlayerController : MonoBehaviour
         Vector3 targetVelocity = new Vector2(value * movementSpeed, rb.velocity.y);
         if (OnGround(rampLayer))
         {
-            targetVelocity.x *= 5;
+            targetVelocity.y = targetVelocity.x;
+            Debug.Log(targetVelocity);
         }
         rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
 
