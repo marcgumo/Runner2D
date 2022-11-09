@@ -79,7 +79,7 @@ public class ShipController : MonoBehaviour
         rb.transform.position = Vector2.MoveTowards(transform.position, patroList[currentPatrolPoint].position, movementSpeed * Time.fixedDeltaTime);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.GetComponent<HealthManager>())
         {

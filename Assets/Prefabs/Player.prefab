@@ -187,16 +187,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   meleeDamage: 1
+  meleeRate: 0.3
   meleeAttackEffect: {fileID: 6040614436306341458}
   AttackEffectPrefab: {fileID: 1576508625749478, guid: a619fc9eccbe6d242a5a7f82bbb584be, type: 3}
   projectile: {fileID: 1300220399972839195, guid: ef08dea3bc61cf24c818409e5d87fb9d, type: 3}
   firePoint: {fileID: 6039620672858057609}
   fireImpulse: 6
-  fireRate: 1
+  fireRate: 5
+  dashPowerUp: 0
+  firePowerUp: 0
   audioList:
   - {fileID: 8300000, guid: 67ca5c2c43956404caf8a15885a02714, type: 3}
   - {fileID: 8300000, guid: 061db5a3a33896c42b694303e7e7bd8f, type: 3}
   - {fileID: 8300000, guid: 52de22c94957c654c9f8f23ed2f2f99c, type: 3}
+  - {fileID: 8300000, guid: dfd21472108d31e47a7b8ed3c8cf94f3, type: 3}
   currentWorld: 1
   finishPoint: {fileID: 0}
   scoreGoal: 500
@@ -336,7 +340,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6039620672757610299}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.67, y: 0.58, z: 0}
+  m_LocalPosition: {x: 0.94, y: 0.58, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

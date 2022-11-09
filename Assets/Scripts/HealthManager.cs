@@ -28,6 +28,16 @@ public class HealthManager : MonoBehaviour
         _UIController = GameObject.FindGameObjectWithTag("UI").GetComponent<UIController>();
     }
 
+    public void GiveHealth(int health)
+    {
+        currentHealth += health;
+        if (currentHealth >= maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        energyBar.fillAmount = (float)currentHealth / (float)maxHealth;
+    }
+
     public void TakeDamage(int _damage, string _tag)
     {
         if (gameObject.tag != _tag && !friendlyFire)
@@ -40,7 +50,7 @@ public class HealthManager : MonoBehaviour
         if (currentCharacterType == characterType.Player)
         {
             energyBar.fillAmount = (float)currentHealth / (float)maxHealth;
-
+            Camera.main.GetComponent<CameraController>().SetDamageEffect();
         }
 
         if (currentHealth <= 0)

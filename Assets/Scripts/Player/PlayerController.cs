@@ -321,9 +321,13 @@ public class PlayerController : MonoBehaviour
             targetVelocity.y = Mathf.Abs(targetVelocity.x);
             if (targetVelocity.y > 0)
             {
-                targetVelocity *= 1.5f;
+                targetVelocity *= 1.75f;
             }
-            Debug.Log(targetVelocity);
+            
+            if (rb.velocity.y < 0)
+            {
+                targetVelocity.y *= -0.4f;
+            }
         }
         rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, movementSmoothing);
 
