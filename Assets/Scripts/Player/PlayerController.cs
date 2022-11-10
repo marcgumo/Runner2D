@@ -7,14 +7,14 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    public enum playerType { Endless, Platformer}
-    public enum worldType { world01, world02, world03 }
+    public enum PlayerType { Endless, Platformer}
+    public enum WorldType { world01, world02, world03 }
 
     [Header("Player Type")]
-    public playerType currentPlayerType;
+    public PlayerType currentPlayerType;
 
     [Header("World Type")]
-    public worldType currentWorldType;
+    public WorldType currentWorldType;
 
     [Header("Movement Settings")]
     public float movementSpeed = 5f;
@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("World Settings")]
     public Transform finishPoint;
-    public int scoreGoal;
+    int scoreGoal;
     bool worldfinished = false;
 
     UIController _UIController;
@@ -99,6 +99,8 @@ public class PlayerController : MonoBehaviour
 
         currentFireRate = fireRate;
         currentMeleeRate = meleeRate;
+
+        scoreGoal = GameObject.Find("Enemies").transform.childCount * 50 + GameObject.Find("Coins").transform.childCount * 25;
 
         _UIController = GameObject.FindGameObjectWithTag("UI").GetComponent<UIController>();
     }
@@ -136,7 +138,7 @@ public class PlayerController : MonoBehaviour
     #region GeneralInput
     void GeneralInput()
     {
-        if (currentPlayerType == playerType.Endless)
+        if (currentPlayerType == PlayerType.Endless)
         {
             inputX = 1;
         }
@@ -382,21 +384,21 @@ public class PlayerController : MonoBehaviour
             _UIController.SetWorldFinished();
         }
 
-        worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
+        //worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
 
-        //switch (currentWorldType)
-        //{
-        //    case worldType.world01:
-        //        worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
-        //        break;
-        //    case worldType.world02:
-        //        worldfinished = _UIController.GetScore() >= scoreGoal;
-        //        break;
-        //    case worldType.world03:
-        //        break;
-        //    default:
-        //        break;
-        //}
+        switch (currentWorldType)
+        {
+            case WorldType.world01:
+            case WorldType.world02:
+                worldfinished = Vector2.Distance(checkGround.position, finishPoint.position) <= checkGroundRadio;
+                break;
+            case WorldType.world03:
+                _UIController.SetScoreGoal(scoreGoal);
+                worldfinished = _UIController.GetScore() >= scoreGoal;
+                break;
+            default:
+                break;
+        }
     }
     #endregion
 

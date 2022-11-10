@@ -6,6 +6,7 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Enemy settings")]
     public int damage = 1;
+    bool dead;
 
     [Header("Movement settings")]
     public float movementSpeed = 5f;
@@ -21,6 +22,8 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        dead = false;
     }
 
     // Update is called once per frame
@@ -38,15 +41,25 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.transform.Translate(Vector2.left * movementSpeed * Time.fixedDeltaTime);
+        if (!dead)
+        {
+            rb.transform.Translate(Vector2.left * movementSpeed * Time.fixedDeltaTime);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.GetComponent<HealthManager>())
+        if (collision.gameObject.GetComponent<HealthManager>() && !dead)
         {
             collision.gameObject.GetComponent<HealthManager>().TakeDamage(damage, "Player");
         }
+    }
+
+    public void Dead()
+    {
+        dead = true;
+        GetComponent<Animator>().Play("EnemyDead");
+        rb.transform.Translate(Vector3.zero);
     }
 
     public void Flip()

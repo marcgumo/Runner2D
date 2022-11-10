@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class HealthManager : MonoBehaviour
 {
-    public enum characterType
+    public enum CharacterType
     {
         Player, Enemy, Ship
     }
 
     [Header("Health Settings")]
-    public characterType currentCharacterType;
+    public CharacterType currentCharacterType;
     public bool friendlyFire = false;
     public Image energyBar;
 
@@ -47,7 +47,7 @@ public class HealthManager : MonoBehaviour
         
         currentHealth -= _damage;
 
-        if (currentCharacterType == characterType.Player)
+        if (currentCharacterType == CharacterType.Player)
         {
             energyBar.fillAmount = (float)currentHealth / (float)maxHealth;
             Camera.main.GetComponent<CameraController>().SetDamageEffect();
@@ -58,7 +58,7 @@ public class HealthManager : MonoBehaviour
             currentHealth = 0;
             switch (currentCharacterType)
             {
-                case characterType.Player:
+                case CharacterType.Player:
                     var player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
 
                     if (player != null)
@@ -66,12 +66,13 @@ public class HealthManager : MonoBehaviour
                         player.ResetGame();
                     }
                     break;
-                case characterType.Enemy:
+                case CharacterType.Enemy:
                     _UIController.SetScore(50);
-                    Destroy(gameObject);
+                    gameObject.GetComponent<EnemyController>().Dead();
+                    Destroy(gameObject, 2f);
                     break;
-                case characterType.Ship:
-                    _UIController.SetScore(100);
+                case CharacterType.Ship:
+                    _UIController.SetScore(50);
                     Destroy(gameObject);
                     break;
                 default:

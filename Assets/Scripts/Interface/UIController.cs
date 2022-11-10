@@ -19,6 +19,7 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI timeText;
     public TMP_InputField userNameText;
+    public TextMeshProUGUI scoreGoal;
 
     [Header("Game Over Settings")]
     public GameObject gameOverPanel;
@@ -56,6 +57,11 @@ public class UIController : MonoBehaviour
     public float GetScore()
     {
         return score;
+    }
+
+    public void SetScoreGoal(int _scoreGoal)
+    {
+        scoreGoal.text = score.ToString() + " / " + _scoreGoal.ToString();
     }
 
     public void SetGameOver()
